@@ -1,5 +1,6 @@
+import os
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
@@ -7,7 +8,6 @@ CORS(app)
 @app.route('/bfhl', methods=['POST', 'GET'])  
 def handle_bfhl():
     if request.method == 'POST':
-        # Handle POST request logic here
         data = request.json.get('data', [])
         print(data)
         numbers = [item for item in data if item.isdigit()]
@@ -31,4 +31,5 @@ def handle_bfhl():
         return jsonify({"operation_code": 1}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Use the PORT environment variable, or default to 5000
+    app.run(host='0.0.0.0', port=port, debug=True)
