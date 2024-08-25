@@ -5,13 +5,15 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/bfhl', methods=['POST', 'GET'])  
+@app.route('/bfhl', methods=['POST', 'GET'])
 def handle_bfhl():
     if request.method == 'POST':
         data = request.json.get('data', [])
         print(data)
+
         numbers = [item for item in data if item.isdigit()]
         alphabets = [item for item in data if item.isalpha()]
+        irregular_characters = [item for item in data if not item.isalnum()]
         lowercase_alphabets = [char for char in alphabets if char.islower()]
         highest_lowercase = max(lowercase_alphabets) if lowercase_alphabets else None
 
@@ -22,8 +24,14 @@ def handle_bfhl():
             "roll_number": "21BCE2075",
             "numbers": numbers,
             "alphabets": alphabets,
-            "highest_lowercase_alphabet": [highest_lowercase] if highest_lowercase else []
+            "highest_lowercase_alphabet": [highest_lowercase] if highest_lowercase else [],
+            "irregular_characters": irregular_characters  # Add irregular characters to the response
         }
+
+        # If irregular characters are found, mark the response as not successful
+        if irregular_characters:
+            response["is_success"] = False
+            response["message"] = "Irregular characters found in input."
 
         return jsonify(response), 200
 
